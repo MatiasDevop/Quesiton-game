@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+	<title>Preguntas</title>
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+	<script  type="text/javascript" src="js/jquery-1.9.1.js"></script>
+	<script src="js/jquery-ui.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/puzlee.js"></script>
+	
+	<link rel="stylesheet" href="js/bootstrap.min.css">
+
+	
+	
+<script>
+	var preguntasSort=["salir del campanento","Examinar cuerpo","traer dos avecillas vivas","traer madera de cedro","traer grana"];
+	preguntasSort.sort( function() { return Math.random() - .5 } );
+
+	var preguntas=[
+			"¿Quien descubrio America",
+			"¿Quien es el mayor superHeroe de todos los tiempos?",
+			"¿Porque los pajaros pian?","los pajors vuelan"];
+			var preguntas_temporal=new Array();
+			var respuestas = [
+			["oro","plata","lienzo"],
+			["ad","ps","ef"],
+			["fr","j","k"],
+			["a","ds","a"]
+			];
+			var valores=["a","b","c"];
+			var preguntas_aletorias=new Array();
+			var contenedor2=new Array();
+			var cont=0;
+			var num=0;
+			var contenedor_respuestas=new Array();
+			var puntos=new Array();	
+			var puntos_incorrectos=new Array();
+			var usuarios=new Array();
+			var words = [ 'uno', 'dos' ];
+			var nombres = [ "elimelec","navi", "Nadav","Abiu","izacar"];
+
+			$(document).ready(function(){
+				$("#btn-print").click(function(){
+					imprimir();
+					//alert("tienes exactamente 20 mints para resolver la encuesta")
+					barraProgreso(0);
+					//play();
+				});
+			});
+			$(document).ready(function(){
+				$("#login").click(function(){
+				//alert("sdasda");
+					$("#contenedor_login").css({"display":"none"});
+					$("#header").css({"display":"block"});
+					$("#contenedor").css({"display":"block"});
+					var correo=$("#correo").val();
+					var usuario=$("#usuario").val();
+					//alert(correo+"+"+usuario);
+					$("#cuenta_usuario").text(usuario);
+					usuarios.push(usuario);
+					$("#user-w").text(usuarios[0]);
+					imprimir();
+					barraProgreso(0);
+				});
+			});
+		/*	function mostrar(){
+						//aleatorio();
+						imprimir();
+			}*/
+				var respuestas_posicion=0;
+				//var rand = Math.floor(Math.random() * preguntas.length);
+			function imprimir()
+			{
+				$("#btn-test").css({"display":"block"});
+				$("#btn-print").css({"display":"none"});
+				var txt_respuestas="";
+				var rand = Math.floor(Math.random() * preguntasT.length);
+
+					var pregunta="<h2>"+preguntasT[rand].pregunta+"</h2>";
+					
+					if(validar(pregunta)){
+						imprimir();
+					}
+					else{
+						$("#pregunta").html(pregunta);
+						var val=0;
+						// nuevo codigo 5/4/2016
+						if(preguntasT[rand].contestada=="ordenar"){
+							//alert("dentro de sortable");
+							$("#lista1 li").css({"display":"block"});
+							$("#li").css({"display":"block"});
+							$("#li li").css({"display":"block"});
+							$("#cajaLista").css({"display":"block"});
+							$("#cardSlots, #cardPile").css({"display":"none"});
+							$("#contenedorPuzzle").css({"display":"none"});
+							$("#sortable1").css({"display":"none"});
+							imprimirSortable(rand);
+							
+							
+
+						}
+						else{
+							if(preguntasT[rand].contestada=="multiple" ||preguntasT[rand].contestada=="fv"){
+									$("#lista1 li").css({"display":"none"});
+									$("#li").css({"display":"none"});
+									$("#li li").css({"display":"none"});
+									$("#cajaLista").css({"display":"none"});
+									$("#cardSlots, #cardPile").css({"display":"none"});
+									$("#contenedorPuzzle").css({"display":"none"});
+									$("#sortable1").css({"display":"none"});
+									for(i in preguntasT[rand].respuestas){
+
+										txt_respuestas += '<input type="radio" name="rbtnCount" value="'+valores[val]+'"><label><h2>'+preguntasT[rand].respuestas[i].txt+'</h2></label><br>';
+										val++;
+									}
+								}
+								else{
+									if(preguntasT[rand].contestada=="dragDrop")
+									{
+									$("#lista1 li").css({"display":"none"});
+									$("#li").css({"display":"none"});
+									$("#li li").css({"display":"none"});
+									$("#cajaLista").css({"display":"none"});
+									$("#contenedorPuzzle").css({"display":"none"});
+									$("#sortable1").css({"display":"none"});
+									//este el imprimir drag and drop y ocultar el de la lista de items siempre por la estetica
+										//alert("Responde cuidadosamente");
+										$("#cardSlots, #cardPile").css({"display":"block"});
+										imprimirDragDrop(rand);
+									}
+									else{
+										if(preguntasT[rand].contestada=="fotos")
+										{
+												$("#lista1 li").css({"display":"none"});
+												$("#li").css({"display":"none"});
+												$("#li li").css({"display":"none"});
+												$("#cajaLista").css({"display":"none"});
+												$("#sortable1").css({"display":"none"});
+												$("#contenedorPuzzle").css({"display":"block"});
+												//este el imprimir drag and drop y ocultar el de la lista de items siempre por la estetica
+													//alert("ordenar imagenes");
+													$("#cardSlots, #cardPile").css({"display":"none"});
+												console.log(preguntasT[rand].respuestas[0].txt)	
+												//var elem = document.createElement("img");
+												var elem=document.getElementById("pieza3")
+												elem.setAttribute("src", "img/n1.jpg");
+												document.getElementById("pieza2").setAttribute("src","img/n2.jpg");
+												document.getElementById("pieza4").setAttribute("src","img/n3.jpg");
+												document.getElementById("pieza1").setAttribute("src","img/n4.jpg")
+												/*elem.setAttribute("height", "768");
+												elem.setAttribute("width", "1024");
+												elem.setAttribute("alt", "Flower");*/
+												//document.getElementById("placehere").appendChild("elem");
+																								
+										}
+										else{
+											if(preguntasT[rand].contestada=="sort")
+											{
+												//alert("estamos en sortsss"+preguntasSort[0]);
+												$("#lista1 li").css({"display":"none"});
+												$("#li").css({"display":"none"});
+												$("#li li").css({"display":"none"});
+												$("#cajaLista").css({"display":"none"});
+												$("#cardSlots, #cardPile").css({"display":"none"});
+												$("#contenedorPuzzle").css({"display":"none"});
+												$("#sortable1").css({"display":"block"});
+													$(function() {
+													//alert($("#sortable1 li")[0].innerHTML)
+														$("#it_1").text(preguntasSort[0]);
+														$("#it_2").text(preguntasSort[1]);
+														$("#it_3").text(preguntasSort[2]);
+														$("#it_4").text(preguntasSort[3]);
+														$("#it_5").text(preguntasSort[4]);
+
+												    $( "#sortable1, #sortable2" ).sortable({
+												      connectWith: ".connectedSortable"
+												    }).disableSelection();
+												  });
+
+											}
+
+										}
+
+									}
+								}
+							}
+						contenedor_respuestas.push(rand);
+						console.log(contenedor_respuestas);
+						console.log(preguntas_temporal);
+						num++;
+						//$("#pregunta").text(preguntas[cont]);
+						document.getElementById("res").innerHTML=txt_respuestas;
+					}
+
+			}
+			var puntaje=0;
+			var puntaje_malo=0;
+			var aux=0;
+			$(document).ready(function(){
+				$("#btn-test").click(function(){
+					var res=0;
+				var select=$('input:radio[name=rbtnCount]:checked').val();
+				//alert("la repuesta seleccionada es; " +select);
+					//for(var x=0;x<preguntas_temporal.length;x++)
+		    		//{
+		    			var  punto=contenedor_respuestas.pop();
+		    			//alert("este  del contenedor_respuestas"+punto);
+						if(preguntasT[punto].contestada==="multiple")
+						{	if(select=="a"){
+								if(select==preguntasT[punto].respuestas[0].valida){
+									//alert("entro");
+									puntaje++
+									//alert(" tu puntaje es :" +puntaje+"de 4");
+									puntos.push(puntaje);
+								}
+								else{
+									//alert("respuesta incorrecta");
+									puntos_incorrectos.push(puntaje);
+									puntaje_malo++;
+								}
+							}
+							if(select=="b"){
+								if(select==preguntasT[punto].respuestas[1].valida){
+									//alert("entro");
+									puntaje++
+									//alert(" tu puntaje es :" +puntaje+" de 4");
+									puntos.push(puntaje);
+								}
+								else{
+									//alert("respuesta incorrecta");
+									puntos_incorrectos.push(puntaje);
+									puntaje_malo++;
+								}
+							}
+							if(select=="c"){
+								if(select==preguntasT[punto].respuestas[2].valida){
+									//alert("entro");
+									puntaje++
+									//alert(" tu puntaje es :" +puntaje+" de 4");
+									puntos.push(puntaje);
+								}
+								else{
+									//alert("respuesta incorrecta");
+									puntos_incorrectos.push(puntaje);
+									puntaje_malo++;
+								}
+							}
+							aux++;
+							//alert(aux);
+						}
+						else{
+
+							if(preguntasT[punto].contestada=="fv"){	
+
+										if(select=="a"){
+											if(select==preguntasT[punto].respuestas[0].valida){
+												//alert("entro");
+												puntaje++
+												//alert(" tu puntaje es :" +puntaje+"de 4");
+												puntos.push(puntaje);
+											}
+											else{
+												//alert("respuesta incorrecta");
+												puntos_incorrectos.push(puntaje);
+												puntaje_malo++;
+											}
+										}
+										if(select=="b"){
+											if(select==preguntasT[punto].respuestas[1].valida){
+												//alert("entro");
+												puntaje++
+												//alert(" tu puntaje es :" +puntaje+" de 4");
+												puntos.push(puntaje);
+											}
+											else{
+												//alert("respuesta incorrecta");
+												puntos_incorrectos.push(puntaje);
+												puntaje_malo++;
+											}
+										}
+										aux++;
+							}
+							else{// si la pregunta es de orden
+									if(preguntasT[punto].contestada=="ordenar"){
+									var sumador=0;
+									
+									if($("#lista2 li").length>1){
+										if($("#lista2 li")[1].innerHTML== preguntasT[punto].respuestas[0].txt[0])
+										{
+											//alert("respuesta correcta"+preguntasT[punto].respuestas[0].txt[0]);
+											sumador++;
+											
+										}
+										if($("#lista2 li")[2].innerHTML==preguntasT[punto].respuestas[0].txt[1])
+											{
+												//alert("respuesta correcta"
+												//	+preguntasT[punto].respuestas[0].txt[1]);
+												sumador++;
+											}
+											//alert(preguntasT[punto].respuestas[0].valida);
+										if(sumador == preguntasT[punto].respuestas[0].valida)
+										{
+											//alert(sumador);
+											puntaje++;
+										}
+									}
+									else{
+										alert("no hay nada en el caja2 por favor arrastre datos");
+									}
+									aux++;
+									}
+									else{
+										if(preguntasT[punto].contestada=="dragDrop")
+										{
+											//alert("drag_drop");
+											if(words[0]==preguntasT[punto].respuestas[1].txt[0] && words[1]==preguntasT[punto].respuestas[1].txt[1]){
+												puntaje++;
+											}
+
+										}else{
+											if(preguntasT[punto].contestada=="fotos")
+											{
+													if(comprobarPuzzle()==true)
+													{
+														puntaje++;
+													}
+													else{
+														alert("errror respondiste mal");
+													}	
+											}
+											else{
+												if(preguntasT[punto].contestada=="sort")
+												{
+													//alert("click para calificar por favor");
+															var idsInOrder =[];
+														$("ul#sortable1 li").each(function() {
+														 idsInOrder.push($(this).text()) 
+														});
+														//alert(idsInOrder.join('\n'));
+														container=idsInOrder;
+														 // alert("soy container " +container);
+														  console.log(container);
+														  var x=0;
+														  for(var i=0 ;i<5;i++)
+														{
+															//alert("res:"+preguntasT[punto].respuestas[0].txt[i]);
+															if(preguntasT[punto].respuestas[0].txt[i]==container[i])
+															{
+																//alert(x);
+																x++;
+															}
+															
+															
+														}
+														//alert(x);
+														if(x==5)
+														{
+															//alert("correcto");
+															puntaje++
+															//break;
+														}
+														else{
+															alert("La lista no esta ordenada");
+															//break;
+															}
+												}
+											}
+										}
+									aux++;
+									}
+								}
+						}
+						
+						
+						$("#res_finales").text("tienes :"+puntaje+ " correctas de "+aux+" Preguntas");
+						$("#res_incorrectas").text(puntaje_malo);
+						$("#res_pos").text("Total de preguntas generadas : "+(aux));
+						if(aux==24)
+						{
+							
+						 	alert("se termino tus preguntas todas  tus preguntas vuelve a empezar el juego por favor");
+							refresh();
+						}
+
+						imprimir();
+						res=suma(puntos);
+						//alert("res"+res);
+				});
+			});
+				function comprobarPuzzle(){
+					var res=false;
+				    if((document.getElementById('pieza1').parentNode.id=='uno') &&
+				        (document.getElementById('pieza2').parentNode.id=='dos') &&
+				        (document.getElementById('pieza3').parentNode.id=='tres') &&
+				        (document.getElementById('pieza4').parentNode.id=='cuatro'))
+				    {
+				        alert('Felicidades, has hecho el puzzle.');
+				        res=true;
+				    }
+				    return res;
+				}
+			function suma(puntos){
+				var res=0;
+				for(i in puntos)
+				{
+					res=puntos[i];
+				}
+				return res;
+			}
+			function validar(item)
+			{	var res=false;
+				if(preguntas_temporal.length==0)
+				{
+					preguntas_temporal.push(item);
+					
+				}
+				else{
+					if(contains.call(preguntas_temporal, item))
+					{
+						return true;
+					}
+					else{
+						
+						preguntas_temporal.push(item);
+						return false;
+					}
+				}
+				return res;
+			}
+			var contains = function(needle) {
+    // Per spec, the way to identify NaN is that it is not equal to itself
+    var findNaN = needle !== needle;
+    var indexOf;
+
+    if(!findNaN && typeof Array.prototype.indexOf === 'function') {
+        indexOf = Array.prototype.indexOf;
+    } else {
+        indexOf = function(needle) {
+            var i = -1, index = -1;
+
+            for(i = 0; i < this.length; i++) {
+                var item = this[i];
+
+                if((findNaN && item !== item) || item === needle) {
+                    index = i;
+                    break;
+                }
+            }
+
+            return index;
+        };
+    }
+
+    return indexOf.call(this, needle) > -1;
+		};
+		function barraProgreso(i){
+			play();
+		}
+		// codigo de elements
+
+		
+
+		var res_ordenamiento=0;
+		var container_indices=new Array();
+		 function imprimirSortable(random){
+		
+		$(document).ready(function(){
+				
+				//alert("es :"+preguntasT[0].respuestas[0].txt[0]);
+				$("#item_" + 0).text(preguntasT[random].respuestas[0].txt[0]);
+				$("#item_" + 1).text(preguntasT[random].respuestas[0].txt[1]);
+				$("#item_" + 2).text(preguntasT[random].respuestas[1].txt[0]);
+				$("#item_" + 3).text(preguntasT[random].respuestas[1].txt[1]);
+				$("#item_" + 4).text(preguntasT[random].respuestas[1].txt[2]);
+				
+				
+           $("#lista1,#lista2").sortable({
+           		connectWith:".s",
+           		start:function(){
+					
+           		},
+              update : function(event, ui){
+              	
+               //  $('#resultado').text(ui.item.text()+ " posicion " +ui.item.index());
+              },
+              stop:function(){
+             
+              }
+           });
+
+        }); 
+         
+        }
+        function imprimirDragDrop(random){
+        	$(document).ready(function(){
+        		var correctCards = 0;
+				$( init );
+				// var words = [ 'uno', 'dos' ];
+				 // var nombres = [ "elimelec","navi", "Nadav","Abiu","izacar"];
+				function init() {
+				 
+				  // Hide the success message
+				  $('#successMessage').hide();
+				  $('#successMessage').css( {
+				    left: '580px',
+				    top: '250px',
+				    width: 0,
+				    height: 0
+				  } );
+				 
+				  // Reset the game
+				  correctCards = 0;
+				  $('#cardPile').html( '' );
+				  $('#cardSlots').html( '' );
+				 
+				  // Create the pile of shuffled cards
+				  //var numbers = [ "elimelec","navi", "Nadav","Abiu","izacar"];
+				  nombres.sort( function() { return Math.random() - .5 } );
+				 
+				  for ( var i=0; i<5; i++ ) {
+				    $('<div>' + nombres[i] + '</div>').data( 'number', nombres[i] ).attr( 'id', 'card'+nombres[i] ).appendTo( '#cardPile' ).draggable( {
+				      containment: '#cntent',
+				      stack: '#cardPile div',
+				      cursor: 'move',
+				      revert: true
+				    } );
+				  }
+				 
+				  // Create the card slots
+				 // 
+				  for ( var i=1; i<=2; i++ ) {
+				    $('<div>' + words[i-1] + '</div>').data( 'number', i ).appendTo( '#cardSlots' ).droppable( {
+				      accept: '#cardPile div',
+				      hoverClass: 'hovered',
+				      drop: handleCardDrop
+				    } );
+				  }
+				 
+				}
+				 
+				function handleCardDrop( event, ui ) {
+				  var slotNumber =$(this).data( 'number');
+				  var cardNumber = ui.draggable.data( 'number' );
+				  console.log(cardNumber);
+				  	words[slotNumber-1]=cardNumber;
+				 
+				    ui.draggable.addClass( 'correct' );
+				    ui.draggable.draggable( 'disable' );
+				    $(this).droppable( 'disable' );
+				    ui.draggable.position( { of: $(this), my: 'left top', at: 'left top' } );
+				    ui.draggable.draggable( 'option', 'revert', false );
+				  	//word.push(ui.item)
+				    correctCards++;
+				 }
+
+				        	});
+
+
+        }
+				var bleep=new Audio();
+  				bleep.src="click1.mp3";
+		
+var preguntasT = [
+	{ //1
+		pregunta: "¿Qué tipo de seres vivos se podían ofrecer en holocausto? (1:5,10,14). ",
+		contestada: "multiple",
+		respuestas: [
+			{
+				txt: 'cabras',
+				valida: false,
+			},
+			{
+				txt: "2 pichones",
+				valida: false,
+			},
+			{
+				txt: "Corderos o ganado vacuno",
+				valida: "c",
+			},
+			
+		]
+	},
+	{//2
+		pregunta: "¿De entre los animales, todo el que tiene pezuña hendida y que rumia, éste comeréis(11:1-10).",
+		contestada: "fv",
+		respuestas: [
+			{
+				txt: 'true',
+				valida: "a",
+			},
+			{
+				txt: 'false',
+				valida: false,
+			},
+		]
+	},
+
+
+	{ //3
+		pregunta: "¿Quién rociaba la sangre sobre el altar? (1:5,11).",
+		contestada: "multiple",
+		respuestas: [
+			{
+				txt: 'Moises',
+				valida: false,
+			},
+			{
+				txt: "Josue",
+				valida: false,
+			},
+			{
+				txt: "Los hijos de Aaron",
+				valida: "c",
+			},
+			
+		]
+	},
+
+	{ //4
+		pregunta: "¿Qué es lo que no debía ser incluido en cualquier tipo de ofrenda de carne (o grano)? (2:11).",
+		contestada: "multiple",
+		respuestas: [
+			{
+				txt: 'sangre',
+				valida: false,
+			},
+			{
+				txt: "Levadura",
+				valida: "b",
+			},
+			{
+				txt: "sal",
+				valida: false,
+			},
+			
+		]
+	},
+	{ //4
+		pregunta: "¿Qué debía traer un sacerdote como ofrenda por el pecado si pecaba involuntariamente? (4:1-12).",
+		contestada: "multiple",
+		respuestas: [
+			{
+				txt: 'Un cordero',
+				valida: false,
+			},
+			{
+				txt: "Un macho cabrío sin defecto",
+				valida: "b",
+			},
+			{
+				txt: "2 tortolas",
+				valida: false,
+			},
+			
+		]
+	},
+	{ //4
+		pregunta: "¿Si no tenia un cabrito o cordero que podrias traer como holocausto? (5:7).",
+		contestada: "multiple",
+		respuestas: [
+			{
+				txt: 'una paloma',
+				valida: false,
+			},
+			{
+				txt: "2 tortolas y 2 pichones",
+				valida: "b",
+			},
+			{
+				txt: "cordero",
+				valida: false,
+			},
+			
+		]
+	},
+	{ //4
+		pregunta: "Con el fin de hacer restitución, una persona que pecara involuntariamente debía añadir a la ofrenda (5:15-16).",
+		contestada: "multiple",
+		respuestas: [
+			{
+				txt: 'una quinta parte',
+				valida: "a",
+			},
+			{
+				txt: "una decima parte",
+				valida: false,
+			},
+			{
+				txt: "una mitad",
+				valida: false,
+			},
+			
+		]
+	},
+	{ //4
+		pregunta: "¿Qué se debía mantener encendido continuamente? (6:8-13).",
+		contestada: "multiple",
+		respuestas: [
+			{
+				txt: 'El fuego para cocinar',
+				valida: false,
+			},
+			{
+				txt: "El fuego sobre el altar",
+				valida: "b",
+			},
+			{
+				txt: "la columna de fuego",
+				valida: false,
+			},
+			
+		]
+	},
+	{ //4
+		pregunta: "¿Qué se hacía con la vaso de barro en la que se cocinaba la carne de la ofrenda por el pecado? (6:28).",
+		contestada: "multiple",
+		respuestas: [
+			{
+				txt: 'sera quebrado',
+				valida: "a",
+			},
+			{
+				txt: "sera enterrado",
+				valida: false,
+			},
+			{
+				txt: "sera lavado",
+				valida: false,
+			},
+			
+		]
+	},
+	{ //4
+		pregunta: "¿Qué ofrenda se hacía como una expresión de gratitud? (7:11-12).",
+		contestada: "multiple",
+		respuestas: [
+			{
+				txt: 'macho cabrio sin defecto',
+				valida: false,
+			},
+			{
+				txt: "torta sin levadura",
+				valida: "b",
+			},
+			{
+				txt: "ofrenda de carne",
+				valida: false,
+			},
+			
+		]
+	},
+	{ //4
+		pregunta: "Lo que se hacía y donde con la grasa de sacrificio de paz al señor? (4:26).",
+		contestada: "multiple",
+		respuestas: [
+			{
+				txt: 'el sacerdote separaba la sangre',
+				valida: false,
+			},
+			{
+				txt: "El sacerdote lo quemaba en el altar",
+				valida: "b",
+			},
+			{
+				txt: "el siervo lo quemaba",
+				valida: false,
+			},
+			
+		]
+	},
+	{ //4
+		pregunta: "¿Cuántos días duraba la ceremonia de consagración de Aarón y sus hijos? (8:31-36)",
+		contestada: "multiple",
+		respuestas: [
+			{
+				txt: '8 dias',
+				valida: false,
+			},
+			{
+				txt: "10 dias",
+				valida: false,
+			},
+			{
+				txt: "7 dias",
+				valida: "c",
+			},
+			
+		]
+	},
+	{ //4
+		pregunta: "¿Qué sucedió cuando Moisés y Aarón salieron del tabernáculo? (9:23-24)",
+		contestada: "multiple",
+		respuestas: [
+			{
+				txt: 'La gloria de Jehova se aparecio a todo el pueblo',
+				valida: "a",
+			},
+			{
+				txt: "La gente grito",
+				valida: false,
+			},
+			{
+				txt: "Cayo mana del cielo",
+				valida: false,
+			},
+			
+		]
+	},
+	{ //4
+		pregunta: "¿Qué hicieron Nadab y Abiú, hijos de Aarón? (10:1-2)",
+		contestada: "multiple",
+		respuestas: [
+			{
+				txt: 'Se emborracharon',
+				valida: false,
+			},
+			{
+				txt: "Ofrecieron fuego extraño delante de Jehová",
+				valida: "b",
+			},
+			{
+				txt: "Tomaron la grasa de las ofrendas",
+				valida: false,
+			},
+			
+		]
+	},
+	{ //4
+		pregunta: "¿Qué era necesario encontrar en el tipo de criaturas acuáticas que se les permitió comer a los israelitas? (11:9-12)",
+		contestada: "multiple",
+		respuestas: [
+			{
+				txt: 'Aletas',
+				valida: false,
+			},
+			{
+				txt: "aletas y escamas",
+				valida: "b",
+			},
+			{
+				txt: "escamas",
+				valida: false,
+			},
+			
+		]
+	},
+	{ //4
+		pregunta: "¿Cual de las aves no se les permitió comer a los israelitas? (11:13-19)",
+		contestada: "multiple",
+		respuestas: [
+			{
+				txt: 'Pollo',
+				valida: false,
+			},
+			{
+				txt: "Pelicano",
+				valida: "b",
+			},
+			{
+				txt: "Ambos",
+				valida: false,
+			},
+			
+		]
+	},
+	{ //4
+		pregunta: "¿En qué día de nacidos eran circuncidados los niños? (12:3)",
+		contestada: "multiple",
+		respuestas: [
+			{
+				txt: 'segundo dia',
+				valida: false,
+			},
+			{
+				txt: "Octavo dia",
+				valida: "b",
+			},
+			{
+				txt: "Decimo cuarto",
+				valida: false,
+			},
+			
+		]
+	},
+	{ //4
+		pregunta: "Jehova dijo:Y si con estas cosas no fuereis corregidos, sino que anduviereis conmigo en oposición, yo también procederé en contra de vosotros, y os heriré aún siete veces por vuestros pecados.",
+		contestada: "fv",
+		respuestas: [
+			{
+				txt: 'false',
+				valida: false,
+			},
+			{
+				txt: "true",
+				valida: "b",
+			},
+			
+		]
+	},
+	{ 
+		pregunta: "¿Por qué hemos de ser santos?Por que el señor es santo(19:1-2)",
+		contestada: "fv",
+		respuestas: [
+			{
+				txt: 'true',
+				valida: "a",
+			},
+			{
+				txt: "false",
+				valida: false,
+			},
+			
+		]
+	},
+	{ 
+		pregunta: "¿Ordene las imagenes en el cuadro de cada ritual q se asia en el campanento? (1:5,10,14). ",
+		contestada: "fotos",
+		respuestas: [
+			{
+				txt: 'img/n1.jpg',
+				valida: false,
+			},
+			{
+				txt: 'img/n1.jpg',
+				valida: false,
+			},
+			{
+				txt: 'img/n1.jpg',
+				valida: "c",
+			},
+			
+		]
+	},
+
+	
+	{ //4
+		pregunta: "y Jehova dijo: Si anduviereis en mis decretos y guardareis mis mandamientos, y los pusiereis por obra ustedes tendran mucha descendencia (18)",
+		contestada: "fv",
+		respuestas: [
+			{
+				txt: 'false',
+				valida: "a",
+			},
+			{
+				txt: "true",
+				valida:false,
+			},
+			
+		]
+	},
+	{ //1
+		pregunta: "¿Se hacia un Ritual para el leproso para cuando ya se haya limpiado, que pasos deberia seguir (cap 14), Escoje las respuestas correctas (Arrastre 2 contenedores por favor). ",
+		contestada: "ordenar",
+		respuestas: [
+			{
+				txt: ["salir del campanento"," buscar 2 avecillas vivas y limpias","matar a una avecilla en barro","mojar la avecilla con sangre de la muerta","rociar 7 veces"],
+				valida: "2",
+			},
+			{
+				txt: ["hechado al mar","Pagar 10 talentos al sacerdote","rociar 7 veces"],
+				valida: false,
+			},
+		]
+	},
+
+	{ //1
+		pregunta: "¿Como se llamaban los hijos de aron?, Escoje las respuestas correctas.(15)",
+		contestada: "dragDrop",
+		respuestas: [
+			{
+				txt: ["solen","Nadaf","juan"],
+				valida: false,
+			},
+			{
+				txt: ["Nadav","Abiu"],
+				valida: true,
+			},
+		]
+	},
+	//sort
+	{ //1
+		pregunta: "¿Pasos que deberia seguir despues de ser limpiado la lepra de una enfermo?Ordena las respuestas correctas.(14)",
+		contestada: "sort",
+		respuestas: [
+			{
+				txt: ["salir del campanento","Examinar cuerpo","traer dos avecillas vivas","traer madera de cedro","traer grana"],
+				valida: true,
+			},
+			{
+				txt: ["Nadav","Abiu"],
+				valida: false,
+			},
+		]
+	}
+
+	];
+			
+</script>
+
+</head>
+<body>
+ <audio src="musica/caleb.mp3" autoplay="false" loop="true" id="musica"></audio>
+			<div id="contenedor_login" class="container">
+					
+				 
+				  <div id="menu_user" class="col-md-12">
+				  		<div>
+				  		<button type="button" class="btn btn-primary btn-block"><h2>Ingrese su datos</h2></button>
+				  		</div><br>
+				  		<div>
+						<input id="usuario" type="text" class="form-control" placeholder="Nombre del usuario">
+						</div>
+						<br>
+						<button id="login" class="btn btn-primary btn-block" data-toggle="modal" data-target="#myModal">
+							Inciar
+						</button>
+
+				  </div>
+				 
+				
+				     
+			</div> <!-- /container -->
+	<nav id="header" class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+	        <div class="navbar-header">
+	          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+	            <span class="sr-only">Toggle navigation</span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	          </button>
+	          <a class="navbar-brand" href="#">Cuestionarios Biblicos</a>
+	          
+	        </div>
+	        <div id="user">
+	        	<h3><span id="cuenta_usuario" class="label label-primary">Primary</span>Bienvenido</h3>
+	        </div>
+	  </div>
+	</nav>
+	
+<!-- todo el container-->
+	<div class="container" id="contenedor">
+		
+			<h1>Levitico <small>Levitico</small></h1>
+			<div class="progress">
+				<div class="progress-bar progress-bar-danger progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+				    <span class="sr-only">100% Complete</span>
+				    <h3 id="porcent"></h3>
+  				</div>
+	  		</div>
+			<div class="row">
+				  	<div class="col-md-12">
+				  		
+						  	<div class="panel panel-primary">
+								<div id="caja1">
+									<label for="" id="pregunta"></label>
+									<div id="res" class="panel-footer"></div>
+									
+									<div class="row">
+										<div class="col-md-6">
+											<div id="cajaLista">
+												<ul id="lista1" class="s" >
+											        <li id="item_0"></li>
+											        <li id="item_1"></li>
+											        <li id="item_2"></li>
+											        <li id="item_3"></li>
+											        <li id="item_4"></li>
+											    </ul>
+										    </div>
+										    		<section id="contenedorPuzzle" class="container">
+												        <div id="contenedorPiezas" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)">
+												            <img id="pieza3" alt="pieza3" draggable="true" ondragstart="start(event)" ondragend="end(event)">
+												            <img id="pieza2" alt="pieza2" draggable="true" ondragstart="start(event)" ondragend="end(event)">
+												            <img id="pieza4"  alt="pieza4" draggable="true" ondragstart="start(event)" ondragend="end(event)">
+												            <img id="pieza1" alt="pieza1" draggable="true" ondragstart="start(event)" ondragend="end(event)">
+												        </div>
+												        <div id="puzzle">
+												            <div class="contenedorPieza" id="uno" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"></div>
+												            <div class="contenedorPieza" id="dos" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"></div>
+												            <div class="contenedorPieza" id="tres" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"></div>
+												            <div class="contenedorPieza" id="cuatro" ondragenter="return enter(event)" ondragover="return over(event)" ondrop="return drop(event)"></div>
+												        </div>  
+												    </section>
+												<ul id="sortable1">
+												  <li  id="it_1">item 1</li>
+												  <li  id="it_2">Item 2</li>
+												  <li id="it_3">Item 3</li>
+												  <li id="it_4">Item 4</li>
+												  <li  id="it_5">Item 5</li>
+												</ul>
+
+										</div>
+										 <div class="col-md-6">	
+										 	<div id="li">
+										    <ul id="lista2" class="s" >
+										      	<li>Respuestas</li>
+										       
+										    </ul>
+										    </div>
+										</div>	
+									</div>
+										<div class="row">
+											  	<div class="col-md-6">
+													  	<div id="cardPile"></div>
+												</div>
+											  	<div class="col-md-6">
+										          <div id="cardSlots">sss </div>
+												</div>
+										</div>	
+						  		</div>
+						  		<div class="modal-footer">
+						  		<button id="btn-test" class="btn btn-primary" onmousedown="bleep.play()"><h3> Siguiente</h3></button>
+						  			<div class="panel-primary">
+									   <h2 class="panel-title"><h2>Resultados</h2></h2>
+									  </div>
+									  <div class="panel-footer">
+									  	<div><h2 id="res_pos"></h2></div>
+									  </div>
+									  <div class="panel-footer">
+									  	<div><h2 id="res_finales"></h2> </div>
+									  </div>
+						        </div>
+						    </div>
+					  	
+					  		
+				  	</div>
+				 	 <!--<div class="col-md-4">
+						ssssssssss	
+				 	 </div>-->
+			</div>
+			
+			<button id="btn-print" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Iniciar</button>
+				<div class="modal fade" id="myModal" role="dialog">
+					    <div class="modal-dialog">
+					    
+					      <!-- Modal content-->
+					      <div class="modal-content">
+					        <div class="modal-header">
+					          <button type="button" class="close" data-dismiss="modal">&times;</button><h2>Bienvenido al cuestionario biblico</h2>
+					          <h3 id="user-w" class="modal-title">Bienvenido</h3>
+					        </div>
+					        <div class="modal-body">
+					          <h3>Tienes 6 minuntos para resolver las preguntas buena suerte</h3>
+					        </div>
+					        <div class="modal-footer">
+					          <button id="login" type="button" class="btn btn-primary" data-dismiss="modal">cotinuar</button>
+					        </div>
+					      </div>
+					      
+					    </div>
+				</div>
+	  			<div id="tiempo">
+								<h4>30 min</h4>
+									<label for="" id="horas">29</label>:
+									<label for="" id="min">00</label>:
+									<label for="" id="seg">00</label>
+				</div>
+
+			
+			
+	</div>
+
+	<script src="js/tiempo.js"></script>
+<style>
+		#sortable1{
+   		list-style-type: none; margin: 0;
+    padding: 0 0 2.5em; float: left; 
+    margin-right: 10px; 
+			width: 75%;
+	
+	border: 1px dotted #6192B7;
+	 background: #DD2535;
+	 	display:none;
+		}
+		#sortable1 li{
+			background: #FFFFFF;
+    border: 1px solid #000;
+    margin: 5px;
+   /* width: 309px;*/
+    height: 50px;
+    text-transform: uppercase;
+    font-size: larger;
+    color: black;
+    font-family: cursive;
+		}
+   
+	body{
+		background-color: #110404;
+	}
+	#header{
+		display: none;
+	}
+	#contenedor{
+		display: none;
+		margin-top: 48px;
+		background-color: #eee;
+	}
+	#menu_user{
+		
+		    margin-top: 179px
+	}
+	#title-ini{
+		    padding: 0.5em 4em .3em;
+	}
+	#user{
+		float: right;
+		color:white;
+	}
+	#btn-close{
+		display: none;
+		color: black;
+	}
+	#usuario{
+		height: 58px;
+		text-align: center;
+		font-size: larger;
+		font-stretch: expanded;
+		text-transform: uppercase;  
+		font-family: cursive; 
+	}
+	#login{
+		font-size: 33px;
+	}
+	#tiempo{
+	margin-top: 50px;
+	text-align: center;
+	background-color: #CE060E;
+	color: white;
+	float: left;
+	width: 18%;
+	height: 92px;
+	border-radius: 8px 8px 8px 8px;
+	position: fixed;
+	
+	-moz-border-radius: 50%;
+     -webkit-border-radius: 50%;
+         border-radius: 137px;
+         display: none;
+	}
+	.progress{
+		height: 45px;
+	}
+	#btn-test{
+		display: none;
+		width: 240px;
+		/*height: 59px;*/
+		background-color: #337ab7;
+		border-radius: 17px;
+	}
+	#btn-test h2{
+		padding: 0px;
+	}
+	#btn-print{
+		width: 240px;
+	}
+	.progress-bar{
+		background-color:rgb(192, 57, 43);
+	}
+	#caja1{
+		display: block;
+	}
+	.radio{
+		padding: 10px;
+	}
+	input[type=radio] {
+    border: 0px;
+    width: 9%;
+    height: 4em;
+	}
+	#lista1 li {
+	background: #FFFFFF;
+    border: 1px solid #000;
+    margin: 5px;
+   /* width: 309px;*/
+    height: 50px;
+    text-transform: uppercase;
+    font-size: larger;
+    color: black;
+    font-family: cursive;
+	}
+	#li{
+	width: 75%;
+	height: 250px;
+	border: 1px dotted #6192B7;
+	 background: #DD2535;
+
+	display:none; 
+	}
+	#li li{
+	background: #FFFFFF;
+    border: 1px solid #000;
+    margin: 5px;
+   /* width: 309px;*/
+    height: 50px;
+    text-transform: uppercase;
+    font-size: larger;
+    color: black;
+    font-family: cursive;
+	}
+	#cajaLista{
+		width: 75%;
+	
+	border: 1px dotted #6192B7;
+	 background: #DD2535;
+	display: none;
+	}
+	.navbar-brand {
+	font-size: 25px;
+	}
+	#res_finales{
+		color:red;
+	}
+	/* para drag and drop*/
+	#cardSlots {
+      margin: 31px 41px 92px 22px;
+  background: #ddf;
+	}
+ 
+/* The initial pile of unsorted cards */
+ 
+#cardPile {
+  margin: 30px auto;
+  background: #ffd;
+}
+ 
+#cardSlots, #cardPile {
+  width: 515px;
+  height: 120px;
+  padding: 20px;
+  border: 2px solid #333;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  -moz-box-shadow: 0 0 .3em rgba(0, 0, 0, .8);
+  -webkit-box-shadow: 0 0 .3em rgba(0, 0, 0, .8);
+  box-shadow: 0 0 .3em rgba(0, 0, 0, .8);
+  display: none;
+}
+ 
+/* Individual cards and slots */
+ 
+#cardSlots div, #cardPile div {
+  float: left;
+  width: 58px;
+  height: 78px;
+  padding: 10px;
+  padding-top: 40px;
+  padding-bottom: 0;
+  border: 2px solid #333;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  margin: 0 0 0 10px;
+  background: #fff;
+}
+ 
+#cardSlots div:first-child, #cardPile div:first-child {
+  margin-left: 0;
+}
+ 
+#cardSlots div.hovered {
+  background: #aaa;
+}
+ 
+#cardSlots div {
+  /*border-style: dashed;*/
+  width: 85px;
+}
+ 
+#cardPile div {
+    width: 83px;
+  background: #666;
+  color: #fff;
+  font-size: 20px;
+  text-shadow: 0 0 3px #000;
+    padding: 20px 6px;
+}
+ 
+#cardPile div.ui-draggable-dragging {
+  -moz-box-shadow: 0 0 .5em rgba(0, 0, 0, .8);
+  -webkit-box-shadow: 0 0 .5em rgba(0, 0, 0, .8);
+  box-shadow: 0 0 .5em rgba(0, 0, 0, .8);
+}
+#contenedorPuzzle {
+    margin: 20px auto;
+    width: 466px;
+    background: rgba(20,20,20,0.8);
+    box-shadow: 0px 0px 10px  2px #777;
+    color: #ccc;
+    padding: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+
+/* Puzzle */
+#contenedorPiezas{
+    background: #e7931a;
+    width: 200px;
+    height: 200px;
+    float: left;
+    margin-left: 10px;
+    box-shadow: 0px 0px 10px  2px #d0eb6a;
+}
+
+#puzzle {
+    background: #d0eb6a;
+    width: 200px;
+    height: 200px;
+    float: right;
+    margin-right: 10px;
+    box-shadow: 0px 0px 10px  2px #e7931a;
+}
+.contenedorPieza {
+    width: 100px;
+    height: 100px;
+    float: left;
+}
+
+#contenedorPuzzle img {
+    float: left;
+    padding: 1px;
+    width: 98px;
+    height: 98px;
+}
+ 
+		
+</style>
+</body>
+</html>
